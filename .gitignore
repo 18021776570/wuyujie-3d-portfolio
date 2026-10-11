@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build output (deployed separately to gh-pages branch)
+dist/
+
+# Vite / TS build cache
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Env
+*.local
+.env
+.env.*
