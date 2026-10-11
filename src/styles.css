@@ -1012,9 +1012,9 @@ canvas {
   opacity: 0;
   transition: opacity 0.85s ease;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: clamp(0px, 4vw, 88px);
+  align-items: flex-end;          /* 人物「站」在画面底部 */
+  justify-content: flex-start;    /* 靠左站 */
+  padding-left: clamp(0px, 5vw, 110px);
   will-change: opacity;
 }
 
@@ -1022,13 +1022,16 @@ canvas {
   opacity: 1;
 }
 
+/* 透明底抠像：按人物真实比例缩放，底部对齐，并投一层暖色落地阴影 */
 .persona-layer img {
-  height: 100%;
+  height: 88%;                    /* 头顶留白，避免与左上角身份标签重叠 */
   width: auto;
   max-width: 100vw;
   object-fit: contain;
-  object-position: left center;
+  object-position: left bottom;
   display: block;
+  filter: drop-shadow(0 30px 42px rgba(120, 84, 40, 0.24))
+          drop-shadow(0 2px 6px rgba(120, 84, 40, 0.12));
 }
 
 /* 右缘与底部渐隐：人物融入暖奶油背景，同时保证右侧履历文案清晰可读 */
@@ -1038,8 +1041,8 @@ canvas {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(244, 234, 214, 0) 30%, rgba(244, 234, 214, 0.7) 64%, rgba(244, 234, 214, 0.98) 100%),
-    linear-gradient(0deg, rgba(244, 234, 214, 0.6) 0%, rgba(244, 234, 214, 0) 34%);
+    linear-gradient(90deg, rgba(244, 234, 214, 0) 34%, rgba(244, 234, 214, 0.7) 68%, rgba(244, 234, 214, 0.98) 100%),
+    linear-gradient(0deg, rgba(244, 234, 214, 0.42) 0%, rgba(244, 234, 214, 0) 26%);
 }
 
 /* 左上角身份名标签 */
@@ -1145,13 +1148,15 @@ canvas {
     display: none;
   }
 
-  /* 身份形象图：移动端居中显示、加强底部渐隐（履历卡片覆盖在上方） */
+  /* 身份形象图：移动端居中、缩小并底部对齐（履历卡片覆盖在上方） */
   .persona-layer {
     justify-content: center;
+    align-items: flex-end;
     padding-left: 0;
   }
   .persona-layer img {
-    object-position: center top;
+    height: 58%;
+    object-position: center bottom;
   }
   .persona-layer::after {
     background: linear-gradient(

@@ -62,8 +62,8 @@ export interface ResumeEntry {
   /** 机构 Logo 图片（可选，放 public/images/，如 '/images/company.png'） */
   logo?: string
   /**
-   * 该身份阶段对应的「人物形象」插画（可选）。
-   * 放 public/images/personas/，如 '/images/personas/persona-student.jpg'。
+   * 该身份阶段对应的「人物形象」图（可选，透明底 WebP/PNG，人物已抠出背景）。
+   * 放 public/images/personas/，如 '/images/personas/persona-student.webp'。
    * 一旦填写：滚动到该履历条时，3D 模型淡出、整屏切换为这张 2D 形象图。
    * 留空 → 该条不切换形象（3D 模型保持显示，用于首屏/联系我等）。
    */
@@ -80,7 +80,7 @@ export const RESUME: ResumeEntry[] = [
     period: '2023 — 2027',
     place: '常州工学院',
     role: '数字媒体 · 本科（在读）',
-    image: import.meta.env.BASE_URL + 'images/personas/persona-student.jpg',
+    image: import.meta.env.BASE_URL + 'images/personas/persona-student.webp',
     tags: ['Ae', 'PS', 'PR', '达芬奇', '剪映', 'Ai', 'An', 'Blender', 'UE', 'Python', '英语四级', 'AI视频'],
   },
   {
@@ -88,7 +88,7 @@ export const RESUME: ResumeEntry[] = [
     period: '2021.9 — 2023.9',
     place: '火箭军',
     role: '参军 · 服役',
-    image: import.meta.env.BASE_URL + 'images/personas/persona-soldier.jpg',
+    image: import.meta.env.BASE_URL + 'images/personas/persona-soldier.webp',
     tags: ['军旅', '纪律', '坚韧'],
   },
   {
@@ -96,7 +96,7 @@ export const RESUME: ResumeEntry[] = [
     period: '小学 · 初中 · 高中',
     place: '金城外国语学校',
     role: '基础教育',
-    image: import.meta.env.BASE_URL + 'images/personas/persona-school.jpg',
+    image: import.meta.env.BASE_URL + 'images/personas/persona-school.webp',
     tags: ['扎实基础', '成长起点'],
   },
   {
