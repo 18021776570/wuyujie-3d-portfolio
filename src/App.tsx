@@ -28,7 +28,7 @@ export default function App() {
   const fogBg = useTransform(
     worksProgress,
     [0, 1],
-    ['rgba(8, 11, 18, 0)', 'rgba(8, 11, 18, 0.45)']
+    ['rgba(244, 234, 214, 0)', 'rgba(244, 234, 214, 0.5)']
   )
   // 离开首屏后压暗 3D 场景，保证履历文字可读
   const scrimOpacity = useTransform(scrollY, [0, 520], [0, 0.4])
@@ -49,7 +49,7 @@ export default function App() {
           camera={{ position: [0, 1.8, 9.5], fov: 42, near: 0.1, far: 500 }}
           gl={{ antialias: true, stencil: false, depth: true, toneMapping: THREE.ACESFilmicToneMapping }}
         >
-          <color attach="background" args={['#0a0e16']} />
+          <color attach="background" args={['#f4e7cd']} />
           <Suspense fallback={null}>
             <Scene />
           </Suspense>
@@ -70,6 +70,9 @@ export default function App() {
           </div>
         ) : null,
       )}
+
+      {/* 暖阳柔光层：顶部柔和日光，营造「午后阳光」氛围 */}
+      <div className="sun-glow" aria-hidden="true" />
 
       {/* 滚动渐暗蒙层 */}
       <motion.div className="scrim" style={{ opacity: scrimOpacity }} aria-hidden="true" />

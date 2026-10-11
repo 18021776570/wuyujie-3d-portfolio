@@ -196,7 +196,7 @@ export default function Scene() {
       <GradientBackground />
 
       {/* 灯光 */}
-      <hemisphereLight args={['#ffffff', '#404040', 0.9]} />
+      <hemisphereLight args={['#fff6e6', '#caa86e', 0.95]} />
       <directionalLight
         position={[5, 8, 5]}
         intensity={2.2}
@@ -204,7 +204,7 @@ export default function Scene() {
         castShadow
         shadow-mapSize={[1024, 1024]}
       />
-      <directionalLight position={[-5, 4, -4]} intensity={1.8} color="#9fc6ff" />
+      <directionalLight position={[-5, 4, -4]} intensity={1.8} color="#ffdcab" />
 
       {/* 模型：有 glb 用自定义模型，否则占位小人 */}
       {SCENE.glb ? <CustomModel /> : <PlaceholderFigure />}
@@ -212,7 +212,7 @@ export default function Scene() {
       {/* 地面阴影接收面 */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.15, 0]} receiveShadow>
         <circleGeometry args={[10, 48]} />
-        <meshStandardMaterial color="#0c1018" roughness={0.9} metalness={0} transparent opacity={0.7} />
+        <meshStandardMaterial color="#e3cfa3" roughness={0.9} metalness={0} transparent opacity={0.5} />
       </mesh>
     </>
   )
@@ -222,8 +222,8 @@ export default function Scene() {
 function GradientBackground() {
   const uniforms = useMemo(
     () => ({
-      uTop: { value: new THREE.Color('#24344a') },
-      uBottom: { value: new THREE.Color('#0a0e16') },
+      uTop: { value: new THREE.Color('#fbeecb') },
+      uBottom: { value: new THREE.Color('#e7d2a8') },
       uSteep: { value: 1.1 },
     }),
     []

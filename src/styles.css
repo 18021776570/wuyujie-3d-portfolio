@@ -1,21 +1,40 @@
 /* ============================================================================
  * 我的 3D 个人主页 · 全局样式
- * 视觉基调复刻参考站（sen-3d-resume）：
- * 暗色电影感（#0a0e16）+ 米白文字（#f4f1ea）+ 暖色强调（#ffd9b3）
+ * 视觉基调：阳光温馨的英式田园（参考《赎罪》《傲慢与偏见》2005）
+ *   —— 奶油纸张底 + 暖金 / 赤陶 / 鼠尾草绿点缀 + 衬线标题，如午后暖阳下的书页
  * ========================================================================== */
 
 :root {
-  --ink: #f5f5f7;
-  --muted: rgba(245, 245, 247, 0.62);
-  --panel: rgba(22, 22, 26, 0.66);
-  --line: rgba(245, 245, 247, 0.12);
-  --accent: #5e5ce6;
-  --accent-2: #0a84ff;
-  --accent-3: #bf5af2;
-  --grad: linear-gradient(100deg, #0a84ff 0%, #5e5ce6 42%, #bf5af2 100%);
-  --bg: #050507;
-  --card: rgba(28, 28, 34, 0.72);
-  --card-hi: rgba(40, 40, 48, 0.85);
+  /* 文字：暖深棕（不再是冷白） */
+  --ink: #3c2c1c;
+  --ink-soft: #5c4631;
+  --muted: rgba(74, 56, 38, 0.66);
+
+  /* 面板 / 卡片：温润奶油半透明 */
+  --panel: rgba(255, 250, 240, 0.6);
+  --panel-2: rgba(255, 252, 245, 0.84);
+
+  /* 暖金 / 赤陶 / 鼠尾草绿（英式花园色） */
+  --accent: #c3892f;   /* 蜂蜜金 */
+  --accent-2: #b4614e; /* 赤陶玫瑰 */
+  --accent-3: #7e8a54; /* 鼠尾草绿 */
+
+  /* 暖色渐变：蜂蜜金 → 琥珀 → 赤陶 */
+  --grad: linear-gradient(100deg, #e0a83e 0%, #d2893f 45%, #b4614e 100%);
+
+  /* 背景：从顶到底的暖阳光晕（奶油 → 沙金） */
+  --bg: radial-gradient(135% 120% at 50% 0%, #fdf6e8 0%, #f4e7cd 55%, #e9d6b0 100%);
+
+  /* 卡片 / 高亮卡 */
+  --card: rgba(255, 250, 240, 0.72);
+  --card-hi: rgba(255, 247, 233, 0.92);
+
+  /* 暖色描边 */
+  --line: rgba(122, 96, 60, 0.2);
+
+  /* 衬线标题字体（文学 / 古典英剧感） */
+  --font-display: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif SC', 'Source Han Serif SC', serif;
+
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
 }
 
@@ -49,8 +68,8 @@ canvas {
 }
 
 ::selection {
-  background: rgba(94, 92, 230, 0.4);
-  color: #fff;
+  background: rgba(199, 145, 62, 0.32);
+  color: #3c2c1c;
 }
 
 /* ---------- 固定 3D 背景 + 蒙层 + 内容层 ---------- */
@@ -66,7 +85,7 @@ canvas {
   height: 100% !important;
 }
 
-/* 滚动渐暗：仅右侧（时间轴所在）压暗，向左平滑渐隐 */
+/* 滚动渐暗：仅右侧（时间轴所在）柔化，向左平滑渐隐 —— 改为暖奶油渐亮，让右侧文字更清爽 */
 .scrim {
   position: fixed;
   inset: 0;
@@ -74,13 +93,26 @@ canvas {
   pointer-events: none;
   background: linear-gradient(
     to right,
-    rgba(10, 14, 22, 0) 20%,
-    rgba(10, 14, 22, 0.75) 58%,
-    rgba(10, 14, 22, 1) 92%
+    rgba(244, 234, 214, 0) 28%,
+    rgba(244, 234, 214, 0.32) 60%,
+    rgba(244, 234, 214, 0.66) 92%
   );
 }
 
-/* 作品区固定蒙层：进入作品区时逐渐压暗 3D 背景 */
+/* 暖阳柔光层：顶部偏上一抹柔和的日光，给 3D 场景 / 首屏镀一层暖光 */
+.sun-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    56% 42% at 50% 15%,
+    rgba(255, 228, 168, 0.5) 0%,
+    rgba(255, 228, 168, 0) 68%
+  );
+}
+
+/* 作品区固定蒙层：进入作品区时柔和压一层暖光，保证画廊文字清晰 */
 .stage-fog {
   position: fixed;
   inset: 0;
@@ -93,7 +125,7 @@ canvas {
   z-index: 10;
 }
 
-/* 固定磨砂右轨：上/右/下溢出屏幕外，仅左缘柔化淡入场景 */
+/* 固定磨砂右轨：上/右/下溢出屏幕外，仅左缘柔化淡入场景（暖奶油） */
 .glass-rail {
   position: fixed;
   top: -2px;
@@ -102,7 +134,7 @@ canvas {
   width: min(680px, 52vw);
   z-index: 3;
   pointer-events: none;
-  background: rgba(10, 14, 22, 0.14);
+  background: rgba(244, 234, 214, 0.2);
   backdrop-filter: blur(9px);
   -webkit-backdrop-filter: blur(9px);
   -webkit-mask: linear-gradient(to right, transparent 0%, #000 46%);
@@ -141,7 +173,7 @@ canvas {
   width: 1px;
   height: 44px;
   overflow: hidden;
-  background: linear-gradient(rgba(245, 245, 247, 0.28), rgba(245, 245, 247, 0.04));
+  background: linear-gradient(rgba(122, 96, 60, 0.32), rgba(122, 96, 60, 0.05));
 }
 
 .scroll-cue-dot {
@@ -153,7 +185,7 @@ canvas {
   margin-left: -1.5px;
   border-radius: 2px;
   background: var(--grad);
-  box-shadow: 0 0 8px rgba(94, 92, 230, 0.8);
+  box-shadow: 0 0 8px rgba(199, 145, 62, 0.8);
   animation: cueDot 1.9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
@@ -176,20 +208,20 @@ canvas {
   inset: 0;
   z-index: 12;
   pointer-events: none;
-  font-family: 'Helvetica Neue', 'PingFang SC', system-ui, sans-serif;
+  font-family: var(--font-display);
 }
 
 .hero-frame {
   position: absolute;
   inset: var(--m);
-  border: 1px solid rgba(245, 245, 247, 0.1);
+  border: 1px solid rgba(122, 96, 60, 0.22);
 }
 
 .hero-mark {
   position: absolute;
   font-size: 13px;
   line-height: 1;
-  color: rgba(245, 245, 247, 0.32);
+  color: rgba(74, 56, 38, 0.34);
 }
 .hero-mark.tl { top: var(--m); left: var(--m); transform: translate(-50%, -50%); }
 .hero-mark.tr { top: var(--m); right: var(--m); transform: translate(50%, -50%); }
@@ -202,13 +234,13 @@ canvas {
   letter-spacing: 0.26em;
   text-transform: uppercase;
   line-height: 1.6;
-  color: rgba(245, 245, 247, 0.46);
+  color: rgba(74, 56, 38, 0.5);
 }
 .hero-meta .hm-name {
   display: block;
   text-transform: none;
   letter-spacing: 0.12em;
-  color: rgba(245, 245, 247, 0.7);
+  color: rgba(60, 44, 28, 0.8);
 }
 .hm-tl { top: calc(var(--m) + 16px); left: calc(var(--m) + 20px); }
 .hm-tr { top: calc(var(--m) + 16px); right: calc(var(--m) + 20px); text-align: right; }
@@ -233,12 +265,12 @@ canvas {
 }
 
 .about-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(38px, 8vw, 88px);
   line-height: 1.04;
-  letter-spacing: -0.02em;
-  background: linear-gradient(180deg, #fff 0%, #a8adb8 100%);
+  letter-spacing: -0.01em;
+  background: linear-gradient(180deg, #4a3116 0%, #946a2e 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -257,7 +289,7 @@ canvas {
   color: var(--muted);
 }
 
-/* ---------- 履历时间轴（Apple 发布会色块卡片风格） ---------- */
+/* ---------- 履历时间轴（暖色书页卡片风格） ---------- */
 .resume {
   padding: 12vh 24px 16vh;
 }
@@ -266,10 +298,10 @@ canvas {
   width: min(480px, 90vw);
   margin: 0 6vw 0 auto;
   text-align: left;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(30px, 5.4vw, 60px);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   color: var(--ink);
 }
 
@@ -287,7 +319,7 @@ canvas {
   top: 8px;
   bottom: 8px;
   width: 1px;
-  background: linear-gradient(rgba(245, 245, 247, 0.24), rgba(245, 245, 247, 0.04));
+  background: linear-gradient(rgba(122, 96, 60, 0.34), rgba(122, 96, 60, 0.06));
 }
 
 .tl-entry {
@@ -303,6 +335,14 @@ canvas {
 
 .tl-body {
   margin-top: -3px;
+  /* 温润奶油卡片：保证右侧文字在 3D / 形象图之上始终清晰可读 */
+  background: rgba(255, 250, 240, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px 26px;
+  box-shadow: 0 14px 44px rgba(120, 88, 46, 0.14);
 }
 
 .tl-dot {
@@ -313,7 +353,7 @@ canvas {
   height: 14px;
   border-radius: 50%;
   background: var(--grad);
-  box-shadow: 0 0 0 5px rgba(94, 92, 230, 0.14), 0 0 18px rgba(94, 92, 230, 0.5);
+  box-shadow: 0 0 0 5px rgba(199, 145, 62, 0.16), 0 0 18px rgba(199, 145, 62, 0.5);
 }
 
 .tl-period {
@@ -333,6 +373,7 @@ canvas {
 }
 
 .tl-place {
+  font-family: var(--font-display);
   font-size: clamp(22px, 3vw, 32px);
   font-weight: 700;
   line-height: 1.2;
@@ -348,7 +389,8 @@ canvas {
   width: 40px;
   height: 40px;
   padding: 5px;
-  background: var(--ink);
+  background: rgba(255, 250, 240, 0.92);
+  border: 1px solid var(--line);
   border-radius: 9px;
 }
 
@@ -362,7 +404,7 @@ canvas {
   margin-top: 0.35em;
   font-size: 14px;
   font-weight: 500;
-  color: rgba(245, 245, 247, 0.68);
+  color: rgba(74, 56, 38, 0.74);
 }
 
 .tl-points {
@@ -378,7 +420,7 @@ canvas {
   padding-left: 1.1em;
   font-size: 14px;
   line-height: 1.6;
-  color: rgba(245, 245, 247, 0.92);
+  color: rgba(60, 44, 28, 0.9);
 }
 
 .tl-points li::before {
@@ -388,7 +430,7 @@ canvas {
   color: var(--accent-2);
 }
 
-/* 技能标签 chip（Apple 发布会式胶囊标签） */
+/* 技能标签 chip（暖色胶囊标签） */
 .tl-tags {
   margin-top: 1.1em;
   display: flex;
@@ -406,14 +448,14 @@ canvas {
   letter-spacing: 0.01em;
   color: var(--ink);
   background: var(--card-hi);
-  border: 1px solid rgba(245, 245, 247, 0.14);
+  border: 1px solid rgba(122, 96, 60, 0.22);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .tl-tag:hover {
-  border-color: rgba(94, 92, 230, 0.6);
+  border-color: rgba(199, 145, 62, 0.7);
   transform: translateY(-1px);
 }
 
@@ -429,9 +471,9 @@ canvas {
   justify-content: center;
   width: 44px;
   height: 44px;
-  color: rgba(245, 245, 247, 0.92);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(245, 245, 247, 0.32);
+  color: rgba(60, 44, 28, 0.85);
+  background: rgba(255, 250, 240, 0.6);
+  border: 1px solid rgba(122, 96, 60, 0.3);
   border-radius: 50%;
   transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
@@ -443,8 +485,8 @@ canvas {
 
 .tl-logo:hover {
   color: var(--ink);
-  border-color: rgba(245, 245, 247, 0.4);
-  background: rgba(245, 245, 247, 0.06);
+  border-color: rgba(199, 145, 62, 0.6);
+  background: rgba(199, 145, 62, 0.14);
   transform: translateY(-2px);
 }
 
@@ -488,7 +530,7 @@ canvas {
   padding: clamp(56px, 11vh, 132px) clamp(40px, 5vw, 76px) clamp(40px, 7vh, 80px);
   border: none;
   border-left: 1px solid var(--line);
-  background: rgba(13, 15, 20, 0.55);
+  background: rgba(255, 250, 240, 0.74);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   color: var(--ink);
@@ -510,7 +552,7 @@ canvas {
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--line);
-  background: #1d1d21;
+  background: #efe2c8;
 }
 
 .wk-cover-media {
@@ -525,15 +567,15 @@ canvas {
   inset: 0;
   display: grid;
   place-items: center;
-  background: radial-gradient(120% 120% at 30% 25%, rgba(48, 55, 60, 0.5), rgba(29, 33, 36, 0.98));
+  background: radial-gradient(120% 120% at 30% 25%, rgba(214, 190, 150, 0.5), rgba(236, 221, 182, 0.98));
 }
 
 .wk-card-cover-no {
-  font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+  font-family: var(--font-display);
   font-size: clamp(40px, 7vw, 88px);
   font-weight: 600;
   line-height: 1;
-  color: rgba(245, 245, 247, 0.16);
+  color: rgba(74, 56, 38, 0.14);
 }
 
 .wk-card-head {
@@ -545,12 +587,13 @@ canvas {
   font-family: 'Helvetica Neue', system-ui, sans-serif;
   font-size: clamp(11px, 1.2vw, 13px);
   letter-spacing: 0.3em;
-  color: rgba(245, 245, 247, 0.4);
+  color: rgba(74, 56, 38, 0.4);
   font-variant-numeric: tabular-nums;
   margin-bottom: 1.1em;
 }
 
 .wk-card-title {
+  font-family: var(--font-display);
   font-size: clamp(24px, 3.4vw, 44px);
   font-weight: 700;
   line-height: 1.06;
@@ -576,7 +619,7 @@ canvas {
   top: clamp(16px, 4vh, 40px);
   left: clamp(24px, 6vw, 80px);
   z-index: 2;
-  font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: clamp(22px, 3vw, 38px);
   letter-spacing: 0.02em;
@@ -592,7 +635,7 @@ canvas {
   width: min(280px, 40vw);
   height: 2px;
   border-radius: 2px;
-  background: rgba(245, 245, 247, 0.18);
+  background: rgba(74, 56, 38, 0.16);
   overflow: hidden;
   z-index: 2;
   pointer-events: none;
@@ -624,7 +667,7 @@ canvas {
 }
 
 .wk-line {
-  border-bottom: 1px solid rgba(245, 245, 247, 0.09);
+  border-bottom: 1px solid rgba(122, 96, 60, 0.12);
 }
 
 .wk-line:last-child {
@@ -658,7 +701,7 @@ canvas {
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: 0.01em;
-  color: rgba(245, 245, 247, 0.9);
+  color: rgba(60, 44, 28, 0.9);
   transition: color 0.2s ease;
 }
 
@@ -689,14 +732,14 @@ canvas {
 .wk-line-tag {
   font-size: clamp(10px, 1vw, 12px);
   letter-spacing: 0.03em;
-  color: rgba(245, 245, 247, 0.5);
+  color: rgba(74, 56, 38, 0.5);
   white-space: nowrap;
 }
 
 .wk-line-tag::before {
   content: '·';
   margin-right: 0.6em;
-  color: rgba(245, 245, 247, 0.3);
+  color: rgba(74, 56, 38, 0.3);
 }
 
 .wk-foot {
@@ -721,7 +764,7 @@ canvas {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   font-size: 11px;
-  color: rgba(245, 245, 247, 0.4);
+  color: rgba(74, 56, 38, 0.4);
 }
 
 .wk-foot-val.accent {
@@ -734,7 +777,7 @@ canvas {
   position: fixed;
   inset: 0;
   z-index: 65;
-  background: rgba(4, 6, 10, 0.6);
+  background: rgba(60, 42, 22, 0.42);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
@@ -743,14 +786,14 @@ canvas {
   position: fixed;
   inset: clamp(16px, 5vh, 56px) clamp(16px, 6vw, 120px);
   z-index: 70;
-  background: rgba(29, 33, 36, 0.98);
+  background: rgba(255, 250, 240, 0.98);
   border: 1px solid var(--line);
   border-radius: 20px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  box-shadow: 0 50px 140px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 50px 140px rgba(80, 55, 25, 0.28);
   scrollbar-width: thin;
-  scrollbar-color: rgba(245, 245, 247, 0.16) transparent;
+  scrollbar-color: rgba(122, 96, 60, 0.28) transparent;
 }
 
 .wk-detail::-webkit-scrollbar {
@@ -760,7 +803,7 @@ canvas {
   background: transparent;
 }
 .wk-detail::-webkit-scrollbar-thumb {
-  background: rgba(245, 245, 247, 0.14);
+  background: rgba(122, 96, 60, 0.26);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
@@ -775,7 +818,7 @@ canvas {
   height: 42px;
   border-radius: 50%;
   border: 1px solid var(--line);
-  background: rgba(10, 13, 20, 0.55);
+  background: rgba(255, 250, 240, 0.72);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: var(--ink);
@@ -785,8 +828,8 @@ canvas {
 }
 
 .wk-detail-close:hover {
-  background: rgba(20, 26, 38, 0.8);
-  border-color: rgba(245, 245, 247, 0.3);
+  background: rgba(255, 247, 233, 0.94);
+  border-color: rgba(199, 145, 62, 0.5);
   transform: rotate(90deg);
 }
 
@@ -811,23 +854,23 @@ canvas {
 .wk-detail-banner {
   position: relative;
   height: clamp(180px, 42vh, 460px);
-  background: #1d2124;
+  background: #ead9b6;
 }
 
 .wk-detail-banner.is-ph {
   display: grid;
   place-items: center;
   padding: 6vh 8vw;
-  background: radial-gradient(120% 120% at 30% 20%, rgba(48, 55, 60, 0.5), rgba(29, 33, 36, 0.98));
+  background: radial-gradient(120% 120% at 30% 20%, rgba(214, 190, 150, 0.5), rgba(236, 221, 182, 0.98));
 }
 
 .wk-detail-ph-text {
-  font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+  font-family: var(--font-display);
   font-size: clamp(28px, 5vw, 72px);
   font-weight: 600;
   line-height: 1.1;
   text-align: center;
-  color: rgba(245, 245, 247, 0.16);
+  color: rgba(74, 56, 38, 0.16);
   letter-spacing: 0.02em;
 }
 
@@ -844,6 +887,7 @@ canvas {
 }
 
 .wk-detail-title {
+  font-family: var(--font-display);
   font-size: clamp(24px, 3.4vw, 42px);
   font-weight: 600;
   line-height: 1.08;
@@ -870,15 +914,15 @@ canvas {
   line-height: 1;
   padding: 6px 12px;
   border-radius: 999px;
-  color: rgba(245, 245, 247, 0.78);
-  background: rgba(245, 245, 247, 0.05);
+  color: rgba(60, 44, 28, 0.8);
+  background: rgba(255, 250, 240, 0.6);
   border: 1px solid var(--line);
 }
 
 .wk-detail-desc {
   font-size: clamp(14px, 1.4vw, 16px);
   line-height: 1.8;
-  color: rgba(245, 245, 247, 0.8);
+  color: rgba(60, 44, 28, 0.82);
 }
 
 .wk-detail-link {
@@ -887,7 +931,7 @@ canvas {
   gap: 0.6em;
   margin-top: clamp(28px, 4vh, 44px);
   padding: 12px 22px;
-  border: 1px solid rgba(94, 92, 230, 0.5);
+  border: 1px solid rgba(199, 145, 62, 0.6);
   border-radius: 999px;
   font-size: 13px;
   letter-spacing: 0.06em;
@@ -898,18 +942,18 @@ canvas {
 }
 
 .wk-detail-link:hover {
-  background: rgba(94, 92, 230, 0.1);
+  background: rgba(199, 145, 62, 0.12);
   gap: 0.9em;
 }
 
-/* ---------- 胶片噪点蒙层（SVG turbulence，multiply 混合） ---------- */
+/* ---------- 胶片噪点蒙层（SVG turbulence，multiply 混合，纸上纹理） ---------- */
 .noise {
   position: fixed;
   inset: 0;
   z-index: 100;
   pointer-events: none;
   mix-blend-mode: multiply;
-  opacity: 0.55;
+  opacity: 0.3;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -987,15 +1031,15 @@ canvas {
   display: block;
 }
 
-/* 右缘与底部渐隐：人物融入暗色背景，同时保证右侧履历文案清晰可读 */
+/* 右缘与底部渐隐：人物融入暖奶油背景，同时保证右侧履历文案清晰可读 */
 .persona-layer::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(5, 5, 7, 0) 36%, rgba(5, 5, 7, 0.7) 68%, rgba(5, 5, 7, 0.98) 100%),
-    linear-gradient(0deg, rgba(5, 5, 7, 0.66) 0%, rgba(5, 5, 7, 0) 36%);
+    linear-gradient(90deg, rgba(244, 234, 214, 0) 30%, rgba(244, 234, 214, 0.7) 64%, rgba(244, 234, 214, 0.98) 100%),
+    linear-gradient(0deg, rgba(244, 234, 214, 0.6) 0%, rgba(244, 234, 214, 0) 34%);
 }
 
 /* 左上角身份名标签 */
@@ -1004,19 +1048,25 @@ canvas {
   top: clamp(24px, 6vh, 60px);
   left: clamp(20px, 5vw, 96px);
   z-index: 2;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(13px, 1.45vw, 19px);
   font-weight: 600;
   letter-spacing: 0.1em;
-  color: rgba(245, 245, 247, 0.82);
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7);
+  color: rgba(60, 44, 28, 0.88);
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.55);
+  border: 1px solid rgba(122, 96, 60, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 6px 24px rgba(120, 88, 46, 0.12);
 }
 
 /* ============================================================================
  * 移动端适配（≤640px）
  * ========================================================================== */
 @media (max-width: 640px) {
-  /* 时间轴文案落在毛玻璃色块卡片上，与 3D 背景清晰分离 */
+  /* 时间轴文案落在毛玻璃色块卡片上，与背景清晰分离 */
   .tl-body {
     background: var(--card);
     backdrop-filter: blur(12px);
@@ -1026,7 +1076,7 @@ canvas {
     padding: 20px 22px;
   }
   .resume-title {
-    text-shadow: 0 0 1px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 1px 2px rgba(255, 250, 240, 0.7), 0 1px 8px rgba(244, 234, 214, 0.6);
   }
 
   /* 移动端隐藏磨砂右轨（会糊掉半屏背景） */
@@ -1106,10 +1156,10 @@ canvas {
   .persona-layer::after {
     background: linear-gradient(
       180deg,
-      rgba(5, 5, 7, 0.12) 0%,
-      rgba(5, 5, 7, 0.04) 32%,
-      rgba(5, 5, 7, 0.82) 80%,
-      rgba(5, 5, 7, 0.97) 100%
+      rgba(244, 234, 214, 0.12) 0%,
+      rgba(244, 234, 214, 0.04) 32%,
+      rgba(244, 234, 214, 0.82) 80%,
+      rgba(244, 234, 214, 0.97) 100%
     );
   }
   .persona-caption {

@@ -22,5 +22,7 @@ npm-debug.log*
 .env
 .env.*
 
-# Local verification screenshots
+# Local verification screenshots / scratch
 _verify/
+_verify_warm/
+_persona_src/
