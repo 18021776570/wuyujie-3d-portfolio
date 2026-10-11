@@ -46,6 +46,32 @@ export const PROFILE = {
   social: [] as SocialLink[],
 }
 
+/* ------------------------------ MBTI 测评结果 ------------------------------ */
+/** 一个维度的两端（如 E 外倾 / I 内倾），win 标记胜出端，percent 为胜出端占比 */
+export interface MbtiDimension {
+  /** 一端字母，如 'E' */
+  code: string
+  /** 该端中文名，如 '外倾' */
+  label: string
+  /** 是否为该维度胜出端 */
+  win: boolean
+  /** 胜出端百分比（0–100，一位小数） */
+  percent: number
+}
+
+export interface MbtiProfile {
+  /** 四字人格类型，如 'ISTP' */
+  type: string
+  /** 类型中文名，如 '鉴赏家' */
+  name: string
+  /** 倾向强度 0–100（高出端百分比均值） */
+  score: number
+  /** 人群占比，如 '5.4%' */
+  proportion: string
+  /** 四个维度对（按 EI / SN / TF / JP 顺序，每对两端齐全） */
+  dimensions: MbtiDimension[]
+}
+
 /* ------------------------------ 履历时间轴 ------------------------------ */
 /** 每一条 = 相机的一个停靠点。想加 / 减履历，直接增删数组元素即可 */
 export interface ResumeEntry {
@@ -68,6 +94,8 @@ export interface ResumeEntry {
    * 留空 → 该条不切换形象（3D 模型保持显示，用于首屏/联系我等）。
    */
   image?: string
+  /** MBTI 测评结果（可选，卡片内以紧凑色条展示；一般只放在「个人优势」这类总结性卡片上） */
+  mbti?: MbtiProfile
 }
 
 /**
@@ -95,14 +123,29 @@ export const RESUME: ResumeEntry[] = [
     // ③ 个人优势（总结性卡片，无形象图 → 显示真实 3D 模型）
     period: '核心优势',
     place: '个人优势',
-    role: '我能为你带来什么',
+    role: 'MBTI ISTP · 鉴赏家',
+    mbti: {
+      type: 'ISTP',
+      name: '鉴赏家',
+      score: 66,
+      proportion: '5.4%',
+      dimensions: [
+        { code: 'E', label: '外倾', win: false, percent: 36.4 },
+        { code: 'I', label: '内倾', win: true, percent: 63.6 },
+        { code: 'S', label: '实感', win: true, percent: 63.6 },
+        { code: 'N', label: '直觉', win: false, percent: 36.4 },
+        { code: 'T', label: '思维', win: true, percent: 72.7 },
+        { code: 'F', label: '情感', win: false, percent: 27.3 },
+        { code: 'J', label: '判断', win: false, percent: 36.4 },
+        { code: 'P', label: '知觉', win: true, percent: 63.6 },
+      ],
+    },
     points: [
-      '全链路数字媒体能力：熟练 Ae / PS / PR / 达芬奇 / 剪映 / Ai / An / Blender / UE / Python，剪辑、特效、三维建模到动画一条龙',
-      '军旅底色：火箭军服役两年，自带纪律性、执行力与抗压韧性，能扛事、不掉链子',
-      '英语四级：具备基础英文阅读与沟通能力，可对接海外素材与前沿资料',
-      'AI 视频敏锐度：持续跟进 AI 生成视频等前沿方向，并落地到实际作品',
+      '全链路数字媒体：剪辑 · 特效 · 三维 · AI',
+      '火箭军服役两年：纪律 · 执行 · 抗压',
+      '英语四级 + AI 视频敏感度：追得上前沿',
     ],
-    tags: ['全栈数字媒体', '军旅历练', '执行力强', '英语四级', 'AI 视频'],
+    tags: ['全栈数字媒体', '军旅历练', '执行力强', 'AI 视频'],
   },
   {
     // ④ 联系我（无形象图 → 回到真实 3D 模型「现在的你」）

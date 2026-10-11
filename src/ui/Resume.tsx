@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { RESUME } from '../config/profile'
+import type { MbtiProfile } from '../config/profile'
 import { SOCIAL_ICONS, type SocialId } from './SocialIcons'
 import { PROFILE } from '../config/profile'
 
@@ -11,6 +12,48 @@ const containerV = {
 const itemV = {
   hidden: { opacity: 0, y: 26 },
   show: { opacity: 1, y: 0, transition: { duration: 0.75, ease: EASE } },
+}
+
+/** MBTI 测评结果：一行摘要 + 四维度紧凑色条（胜出端在前，一眼看出倾向） */
+function MbtiBlock({ data }: { data: MbtiProfile }) {
+  // 把 8 端按维度对两两分组（EI / SN / TF / JP）
+  const pairs: MbtiProfile['dimensions'][] = []
+  for (let i = 0; i < data.dimensions.length; i += 2) {
+    pairs.push(data.dimensions.slice(i, i + 2))
+  }
+
+  return (
+    <motion.div className="tl-mbti" variants={itemV}>
+      <div className="tl-mbti-top">
+        <span className="tl-mbti-code">{data.type}</span>
+        <span className="tl-mbti-name">{data.name}</span>
+        <span className="tl-mbti-meta">
+          倾向强度 {data.score} · 人群占比 {data.proportion}
+        </span>
+      </div>
+      <div className="tl-mbti-grid">
+        {pairs.map((pair, i) => {
+          const win = pair.find((d) => d.win) ?? pair[0]
+          const lose = pair.find((d) => !d.win) ?? pair[1]
+          return (
+            <div className="tl-mbti-cell" key={i}>
+              <div className="tl-mbti-letters">
+                <b>{win.code}</b>
+                <span className="tl-mbti-sep">/</span>
+                <span className="tl-mbti-lose">{lose.code}</span>
+              </div>
+              <div className="tl-mbti-label">
+                {win.label} {win.percent.toFixed(1)}%
+              </div>
+              <span className="tl-mbti-track">
+                <i style={{ width: `${win.percent}%` }} />
+              </span>
+            </div>
+          )
+        })}
+      </div>
+    </motion.div>
+  )
 }
 
 /** 履历时间轴条目。data-point 供 3D 场景定位相机停靠点 */
@@ -42,6 +85,7 @@ function Entry({ entry, index }: { entry: (typeof RESUME)[number]; index: number
             {entry.role}
           </motion.div>
         )}
+        {entry.mbti && <MbtiBlock data={entry.mbti} />}
         {entry.points && (
           <motion.ul className="tl-points" variants={itemV}>
             {entry.points.map((p, i) => (

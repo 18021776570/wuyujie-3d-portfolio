@@ -430,7 +430,107 @@ canvas {
   color: var(--accent-2);
 }
 
-/* 技能标签 chip（暖色胶囊标签） */
+/* ---------- MBTI 测评结果（暖色小卡：四维度倾向条） ---------- */
+.tl-mbti {
+  margin-top: 1em;
+  padding: 14px 16px 15px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(224, 168, 62, 0.13), rgba(180, 97, 78, 0.07));
+  border: 1px solid rgba(199, 145, 62, 0.3);
+}
+
+.tl-mbti-top {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tl-mbti-code {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  color: var(--ink);
+}
+
+.tl-mbti-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--accent-2);
+}
+
+.tl-mbti-meta {
+  margin-left: auto;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.tl-mbti-grid {
+  margin-top: 0.9em;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tl-mbti-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.tl-mbti-letters {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.tl-mbti-letters b {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.tl-mbti-sep {
+  color: rgba(74, 56, 38, 0.32);
+}
+
+.tl-mbti-lose {
+  color: rgba(74, 56, 38, 0.44);
+}
+
+.tl-mbti-label {
+  font-size: 11px;
+  line-height: 1.2;
+  color: rgba(60, 44, 28, 0.74);
+  white-space: nowrap;
+}
+
+.tl-mbti-track {
+  display: block;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(176, 132, 72, 0.24);
+  overflow: hidden;
+}
+
+.tl-mbti-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--grad);
+}
+
+/* ---------- 技能标签 chip（暖色胶囊标签） ---------- */
 .tl-tags {
   margin-top: 1.1em;
   display: flex;
@@ -1080,6 +1180,17 @@ canvas {
   }
   .resume-title {
     text-shadow: 0 1px 2px rgba(255, 250, 240, 0.7), 0 1px 8px rgba(244, 234, 214, 0.6);
+  }
+
+  /* MBTI 四维度条：窄屏改 2×2，避免文字挤成一团 */
+  .tl-mbti-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px 14px;
+  }
+
+  .tl-mbti-meta {
+    margin-left: 0;
+    width: 100%;
   }
 
   /* 移动端隐藏磨砂右轨（会糊掉半屏背景） */
