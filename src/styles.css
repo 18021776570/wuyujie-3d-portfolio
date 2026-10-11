@@ -955,6 +955,63 @@ canvas {
   }
 }
 
+/* ---------- 身份形象图层（滚动到履历段时整屏切换，3D 同步淡出） ---------- */
+.scene-bg {
+  transition: opacity 0.85s ease;
+}
+
+.persona-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.85s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: clamp(0px, 4vw, 88px);
+  will-change: opacity;
+}
+
+.persona-layer.is-on {
+  opacity: 1;
+}
+
+.persona-layer img {
+  height: 100%;
+  width: auto;
+  max-width: 100vw;
+  object-fit: contain;
+  object-position: left center;
+  display: block;
+}
+
+/* 右缘与底部渐隐：人物融入暗色背景，同时保证右侧履历文案清晰可读 */
+.persona-layer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(5, 5, 7, 0) 36%, rgba(5, 5, 7, 0.7) 68%, rgba(5, 5, 7, 0.98) 100%),
+    linear-gradient(0deg, rgba(5, 5, 7, 0.66) 0%, rgba(5, 5, 7, 0) 36%);
+}
+
+/* 左上角身份名标签 */
+.persona-caption {
+  position: absolute;
+  top: clamp(24px, 6vh, 60px);
+  left: clamp(20px, 5vw, 96px);
+  z-index: 2;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-size: clamp(13px, 1.45vw, 19px);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(245, 245, 247, 0.82);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7);
+}
+
 /* ============================================================================
  * 移动端适配（≤640px）
  * ========================================================================== */
@@ -1035,6 +1092,27 @@ canvas {
     font-size: 11.5px;
   }
   .hm-right {
+    display: none;
+  }
+
+  /* 身份形象图：移动端居中显示、加强底部渐隐（履历卡片覆盖在上方） */
+  .persona-layer {
+    justify-content: center;
+    padding-left: 0;
+  }
+  .persona-layer img {
+    object-position: center top;
+  }
+  .persona-layer::after {
+    background: linear-gradient(
+      180deg,
+      rgba(5, 5, 7, 0.12) 0%,
+      rgba(5, 5, 7, 0.04) 32%,
+      rgba(5, 5, 7, 0.82) 80%,
+      rgba(5, 5, 7, 0.97) 100%
+    );
+  }
+  .persona-caption {
     display: none;
   }
 }

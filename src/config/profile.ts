@@ -61,23 +61,46 @@ export interface ResumeEntry {
   tags?: string[]
   /** 机构 Logo 图片（可选，放 public/images/，如 '/images/company.png'） */
   logo?: string
+  /**
+   * 该身份阶段对应的「人物形象」插画（可选）。
+   * 放 public/images/personas/，如 '/images/personas/persona-student.jpg'。
+   * 一旦填写：滚动到该履历条时，3D 模型淡出、整屏切换为这张 2D 形象图。
+   * 留空 → 该条不切换形象（3D 模型保持显示，用于首屏/联系我等）。
+   */
+  image?: string
 }
 
+/**
+ * 履历顺序：按「简历倒序」——最近的经历在前。
+ * 滚动到某一条时，会切换到对应的「人物形象」插画（见 image 字段）。
+ */
 export const RESUME: ResumeEntry[] = [
   {
-    period: '2021 — 2023',
+    // ① 现在（在读）——大学生形象
+    period: '2023 — 2027',
+    place: '常州工学院',
+    role: '数字媒体 · 本科（在读）',
+    image: import.meta.env.BASE_URL + 'images/personas/persona-student.jpg',
+    tags: ['Ae', 'PS', 'PR', '达芬奇', '剪映', 'Ai', 'An', 'Blender', 'UE', 'Python', '英语四级', 'AI视频'],
+  },
+  {
+    // ② 参军经历——军人形象
+    period: '2021.9 — 2023.9',
     place: '火箭军',
     role: '参军 · 服役',
-    points: ['金城外国语学校 小初高'],
+    image: import.meta.env.BASE_URL + 'images/personas/persona-soldier.jpg',
     tags: ['军旅', '纪律', '坚韧'],
   },
   {
-    period: '2023 — 2027',
-    place: '常州工学院',
-    role: '数字媒体 · 本科',
-    tags: ['Ae', 'PS', 'PR', '达芬奇', 'Blender', 'UE', 'Python', '英四', 'AI视频'],
+    // ③ 中小学阶段——中学生形象
+    period: '小学 · 初中 · 高中',
+    place: '金城外国语学校',
+    role: '基础教育',
+    image: import.meta.env.BASE_URL + 'images/personas/persona-school.jpg',
+    tags: ['扎实基础', '成长起点'],
   },
   {
+    // ④ 联系我（无形象图 → 回到真实 3D 模型「现在的你」）
     period: 'Contact',
     place: '联系我',
     role: '欢迎合作',
@@ -216,26 +239,23 @@ export const SCENE = {
    * camOffset：相机相对图标的偏移向量（世界单位），与 lookAt 的距离决定放大倍率（越小越放大）。
    * modelTurnDeg：负=模型向左转，正=向右转。
    */
-  faceShots: [
-    {
-      entryIndex: 0, // 示例大学 → 右脸颊颧骨图标（Ae_Blank）
-      nodeLocal: [0.228, 0.949, 0.277] as [number, number, number],
-      camOffset: [0.85, 0.15, 1.05] as [number, number, number],
-      modelTurnDeg: -45,
-    },
-    {
-      entryIndex: 2, // 独立创作 → 左脸颊颧骨图标（DY_Blank）
-      nodeLocal: [-0.253, 0.886, 0.352] as [number, number, number],
-      camOffset: [-0.85, 0.15, 1.05] as [number, number, number],
-      modelTurnDeg: 45,
-    },
-  ],
+  /**
+   * 脸部图标特写镜头（当前不使用：改为「滚动切换身份插画」方案后，
+   * 履历段由 2D 形象图接管、3D 模型淡出）。保留空数组以兼容场景代码类型。
+   */
+  faceShots: [] as {
+    entryIndex: number
+    nodeLocal: [number, number, number]
+    camOffset: [number, number, number]
+    modelTurnDeg: number
+  }[],
 
   /**
    * 这些履历索引使用「初始镜头」——与滚到页面顶部的构图完全一致
    * （正面中景、完整露出头发和上半身、模型正面对镜头）。
+   * 这里让「联系我」回到正面造型（无形象图 → 显示真实 3D 模型）。
    */
-  resetShots: [1], // 示例公司
+  resetShots: [3], // 联系我
 
   /** 是否启用 Bloom 辉光（氛围效果，低端设备可关） */
   bloom: true,
