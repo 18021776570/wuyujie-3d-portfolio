@@ -120,10 +120,11 @@ export const RESUME: ResumeEntry[] = [
     tags: ['军旅', '纪律', '坚韧'],
   },
   {
-    // ③ 个人优势（总结性卡片，无形象图 → 显示真实 3D 模型）
+    // ③ 个人优势（配「毕业后」形象图 + MBTI 测评）
     period: '核心优势',
     place: '个人优势',
     role: 'MBTI ISTP · 鉴赏家',
+    image: import.meta.env.BASE_URL + 'images/personas/persona-grad.webp',
     mbti: {
       type: 'ISTP',
       name: '鉴赏家',
@@ -301,9 +302,10 @@ export const SCENE = {
   /**
    * 这些履历索引使用「初始镜头」——与滚到页面顶部的构图完全一致
    * （正面中景、完整露出头发和上半身、模型正面对镜头）。
-   * 「个人优势」与「联系我」都无形象图 → 显示真实 3D 模型，回到正面造型。
+   * 仅「联系我」无形象图 → 显示真实 3D 模型，回到正面造型；
+   * 「个人优势」已配「毕业后」形象图，改由 2D 形象图层接管。
    */
-  resetShots: [2, 3], // 个人优势、联系我
+  resetShots: [3], // 联系我
 
   /** 是否启用 Bloom 辉光（氛围效果，低端设备可关） */
   bloom: true,
