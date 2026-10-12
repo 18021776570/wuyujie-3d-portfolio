@@ -232,7 +232,7 @@ canvas {
 
 .hero-meta {
   position: absolute;
-  font-size: clamp(9px, 0.9vw, 11px);
+  font-size: clamp(11px, 1vw, 13px);
   letter-spacing: 0.26em;
   text-transform: uppercase;
   line-height: 1.6;
@@ -285,7 +285,7 @@ canvas {
   max-width: min(720px, 88vw);
   font-family: var(--font-kaiti);
   font-weight: 500;
-  font-size: clamp(11px, 1.3vw, 15px);
+  font-size: clamp(13px, 1.5vw, 18px);
   line-height: 1.7;
   letter-spacing: 0.01em;
   color: var(--muted);
@@ -298,7 +298,7 @@ canvas {
 
 .resume-title {
   width: min(480px, 90vw);
-  margin: 0 6vw 0 auto;
+  margin: 0 10vw 0 auto;
   text-align: left;
   font-family: var(--font-display);
   font-weight: 700;
@@ -310,8 +310,8 @@ canvas {
 .timeline {
   position: relative;
   width: min(480px, 90vw);
-  /* 靠右排布：左侧留给 3D 模型，时间轴贴画面右侧 */
-  margin: 6vh 6vw 0 auto;
+  /* 靠右排布：左侧留给 3D 模型，时间轴贴画面右侧（右外边距加大 → 整体向左靠近红线） */
+  margin: 6vh 10vw 0 auto;
 }
 
 .timeline::before {
@@ -360,7 +360,7 @@ canvas {
 
 .tl-period {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -404,7 +404,7 @@ canvas {
 
 .tl-role {
   margin-top: 0.35em;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: rgba(74, 56, 38, 0.74);
 }
@@ -420,7 +420,7 @@ canvas {
 .tl-points li {
   position: relative;
   padding-left: 1.1em;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.6;
   color: rgba(60, 44, 28, 0.9);
 }
@@ -458,7 +458,7 @@ canvas {
 }
 
 .tl-mbti-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--accent-2);
@@ -466,7 +466,7 @@ canvas {
 
 .tl-mbti-meta {
   margin-left: auto;
-  font-size: 11px;
+  font-size: 12.5px;
   letter-spacing: 0.03em;
   color: var(--muted);
   white-space: nowrap;
@@ -490,7 +490,7 @@ canvas {
   display: flex;
   align-items: baseline;
   gap: 3px;
-  font-size: 11px;
+  font-size: 12.5px;
   letter-spacing: 0.06em;
 }
 
@@ -511,7 +511,7 @@ canvas {
 }
 
 .tl-mbti-label {
-  font-size: 11px;
+  font-size: 12.5px;
   line-height: 1.2;
   color: rgba(60, 44, 28, 0.74);
   white-space: nowrap;
@@ -545,7 +545,7 @@ canvas {
   align-items: center;
   padding: 6px 13px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--ink);
