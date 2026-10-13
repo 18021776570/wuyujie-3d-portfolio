@@ -41,7 +41,7 @@ export default function PetalField() {
     ]
 
     const parts: P[] = []
-    const COUNT = 26
+    const COUNT = 40
 
     const rand = (a: number, b: number) => a + Math.random() * (b - a)
 
