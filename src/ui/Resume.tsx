@@ -3,6 +3,8 @@ import { RESUME } from '../config/profile'
 import type { MbtiProfile } from '../config/profile'
 import { SOCIAL_ICONS, type SocialId } from './SocialIcons'
 import { PROFILE } from '../config/profile'
+import { TiltCard, Magnetic } from './Interactive'
+import { RollingCounter } from './RollingCounter'
 
 const EASE = [0.22, 1, 0.36, 1]
 const containerV = {
@@ -68,41 +70,49 @@ function Entry({ entry, index }: { entry: (typeof RESUME)[number]; index: number
       viewport={{ once: true, margin: '-12% 0px -12% 0px' }}
     >
       <motion.span className="tl-dot" variants={itemV} aria-hidden="true" />
-      <div className="tl-body">
-        <motion.div className="tl-period" variants={itemV}>
-          {entry.period}
-        </motion.div>
-        <motion.div className="tl-head" variants={itemV}>
-          {entry.logo && (
-            <span className="tl-logo-chip">
-              <img src={entry.logo} alt={entry.place} loading="lazy" />
-            </span>
-          )}
-          <h3 className="tl-place">{entry.place}</h3>
-        </motion.div>
-        {entry.role && (
-          <motion.div className="tl-role" variants={itemV}>
-            {entry.role}
+      <TiltCard maxTilt={4} className="tl-body-wrap">
+        <div className="tl-body">
+          <motion.div className="tl-period" variants={itemV}>
+            {entry.period}
           </motion.div>
-        )}
-        {entry.mbti && <MbtiBlock data={entry.mbti} />}
-        {entry.points && (
-          <motion.ul className="tl-points" variants={itemV}>
-            {entry.points.map((p, i) => (
-              <li key={i}>{p}</li>
-            ))}
-          </motion.ul>
-        )}
-        {entry.tags && entry.tags.length > 0 && (
-          <motion.div className="tl-tags" variants={itemV}>
-            {entry.tags.map((t, i) => (
-              <span key={i} className="tl-tag">
-                {t}
+          <motion.div className="tl-head" variants={itemV}>
+            {entry.logo && (
+              <span className="tl-logo-chip">
+                <img src={entry.logo} alt={entry.place} loading="lazy" />
               </span>
-            ))}
+            )}
+            <h3 className="tl-place">{entry.place}</h3>
           </motion.div>
-        )}
-      </div>
+          {entry.role && (
+            <motion.div className="tl-role" variants={itemV}>
+              {entry.role}
+            </motion.div>
+          )}
+          {entry.mbti && <MbtiBlock data={entry.mbti} />}
+          {entry.points && (
+            <motion.ul className="tl-points" variants={itemV}>
+              {entry.points.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))}
+            </motion.ul>
+          )}
+          {entry.tags && entry.tags.length > 0 && (
+            <motion.div className="tl-tags" variants={itemV}>
+              {entry.tags.map((t, i) =>
+                entry.place === '联系我' ? (
+                  <Magnetic key={i} strength={0.4} className="tl-tag-mag">
+                    <span className="tl-tag">{t}</span>
+                  </Magnetic>
+                ) : (
+                  <span key={i} className="tl-tag">
+                    {t}
+                  </span>
+                ),
+              )}
+            </motion.div>
+          )}
+        </div>
+      </TiltCard>
     </motion.div>
   )
 }
@@ -111,15 +121,19 @@ function Entry({ entry, index }: { entry: (typeof RESUME)[number]; index: number
 export default function Resume() {
   return (
     <section className="resume">
-      <motion.h2
-        className="resume-title"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-10% 0px' }}
-        transition={{ duration: 0.7, ease: EASE }}
-      >
-        Résumé
-      </motion.h2>
+      <div className="resume-head">
+        <motion.h2
+          className="resume-title"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-10% 0px' }}
+          transition={{ duration: 0.7, ease: EASE }}
+        >
+          Résumé
+        </motion.h2>
+        {/* 年份里程表：滚动时从最近年份翻向最早年份 */}
+        <RollingCounter min={2021} max={2027} label="yr" className="rolling-counter-side" />
+      </div>
       <div className="timeline">
         {RESUME.map((e, i) => (
           <Entry key={i} entry={e} index={i} />

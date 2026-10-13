@@ -114,6 +114,14 @@ canvas {
   );
 }
 
+/* 秋日花瓣 / 光尘粒子层：暖色点缀 + 鼠标视差，置于 3D 场景之上、内容之下 */
+.petal-field {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
 /* 作品区固定蒙层：进入作品区时柔和压一层暖光，保证画廊文字清晰 */
 .stage-fog {
   position: fixed;
@@ -291,6 +299,24 @@ canvas {
   color: var(--muted);
 }
 
+/* 打字机光标：暖金色闪烁细竖条 */
+.about-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-left: 3px;
+  vertical-align: -0.18em;
+  background: var(--accent);
+  border-radius: 1px;
+  animation: caretBlink 0.85s steps(1) infinite;
+  box-shadow: 0 0 6px rgba(199, 145, 62, 0.7);
+}
+
+@keyframes caretBlink {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
+}
+
 /* ---------- 履历时间轴（暖色书页卡片风格） ---------- */
 .resume {
   padding: 12vh 24px 16vh;
@@ -314,6 +340,45 @@ canvas {
   margin: 6vh 10vw 0 auto;
 }
 
+/* 履历标题 + 右侧年份里程表 */
+.resume-head {
+  position: relative;
+  margin-right: 10vw;
+}
+.resume-head .resume-title {
+  margin-right: 0;
+}
+
+/* 数字里程表：竖直小字，滚动时年份翻转 */
+.rolling-counter {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  gap: 6px;
+}
+.rolling-counter-side {
+  position: absolute;
+  top: 6px;
+  right: -96px;
+  color: rgba(74, 56, 38, 0.4);
+}
+.rolling-counter-num {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: clamp(20px, 3vw, 34px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  text-shadow: 0 0 14px rgba(199, 145, 62, 0.35);
+}
+.rolling-counter-label {
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(74, 56, 38, 0.38);
+}
+
 .timeline::before {
   content: '';
   position: absolute;
@@ -333,6 +398,21 @@ canvas {
 
 .tl-entry:last-child {
   padding-bottom: 36vh;
+}
+
+/* 卡片视差：鼠标悬停时轻微倾斜（手扶书页感），并柔和上浮 */
+.tl-body-wrap {
+  transform-style: preserve-3d;
+  transition: filter 0.3s ease;
+}
+.tl-body-wrap:hover .tl-body {
+  box-shadow: 0 22px 60px rgba(120, 88, 46, 0.22);
+}
+
+/* 磁性磁贴：鼠标靠近时被吸向光标 */
+.tl-tag-mag {
+  display: inline-flex;
+  will-change: transform;
 }
 
 .tl-body {
@@ -356,6 +436,19 @@ canvas {
   border-radius: 50%;
   background: var(--grad);
   box-shadow: 0 0 0 5px rgba(199, 145, 62, 0.16), 0 0 18px rgba(199, 145, 62, 0.5);
+  animation: dotBreath 3.4s ease-in-out infinite;
+}
+
+/* 节点呼吸：像花苞般轻轻开合的光晕 */
+@keyframes dotBreath {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px rgba(199, 145, 62, 0.14), 0 0 14px rgba(199, 145, 62, 0.45);
+  }
+  50% {
+    transform: scale(1.18);
+    box-shadow: 0 0 0 9px rgba(199, 145, 62, 0.1), 0 0 26px rgba(199, 145, 62, 0.75);
+  }
 }
 
 .tl-period {
@@ -643,6 +736,24 @@ canvas {
   border-right: 1px solid var(--line);
 }
 
+/* 作品卡 hover：轻微上浮 + 暖色光晕，封面微缩放 */
+.wk-card {
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.55s ease,
+    background 0.55s ease;
+  will-change: transform;
+}
+.wk-card:hover {
+  transform: translateY(-6px);
+  background: rgba(255, 250, 240, 0.86);
+  box-shadow: 0 30px 90px rgba(120, 88, 46, 0.2);
+}
+.wk-card:hover .wk-card-cover {
+  transform: scale(1.03);
+}
+.wk-card-cover {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* 板块小封面：右侧错落，支持图片 / 视频 / 渐变占位 */
 .wk-card-cover {
   position: relative;
@@ -729,38 +840,58 @@ canvas {
   pointer-events: none;
 }
 
-.wk-progress {
+/* 作品区进度圆环：右下方金色圆环 + 百分比 */
+.wk-ring {
   position: absolute;
-  bottom: clamp(22px, 5vh, 50px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(280px, 40vw);
-  height: 2px;
-  border-radius: 2px;
-  background: rgba(74, 56, 38, 0.16);
-  overflow: hidden;
+  bottom: clamp(18px, 5vh, 46px);
+  right: clamp(24px, 6vw, 80px);
   z-index: 2;
+  width: 64px;
+  height: 64px;
   pointer-events: none;
 }
-
-.wk-progress-fill {
+.wk-ring-svg {
   width: 100%;
   height: 100%;
-  border-radius: 2px;
-  background: var(--grad);
-  transform-origin: left center;
+  transform: rotate(-90deg);
+}
+.wk-ring-track {
+  fill: none;
+  stroke: rgba(74, 56, 38, 0.14);
+  stroke-width: 3;
+}
+.wk-ring-fill {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.2s ease;
+}
+.wk-ring-pct {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
 }
 
 .wk-hint {
   position: absolute;
-  bottom: clamp(20px, 5vh, 48px);
-  right: clamp(24px, 6vw, 80px);
+  bottom: clamp(30px, 6vh, 56px);
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 2;
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted);
   pointer-events: none;
+  white-space: nowrap;
 }
 
 /* 极简清单 */
@@ -810,6 +941,28 @@ canvas {
 .wk-line-btn:hover .wk-line-name,
 .wk-line-btn:focus-visible .wk-line-name {
   color: var(--accent);
+}
+
+/* 作品行点击涟漪：金色圆环扩散淡出 */
+.wk-ripple {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(199, 145, 62, 0.6);
+  pointer-events: none;
+  animation: rippleOut 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes rippleOut {
+  from {
+    transform: scale(0.4);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(9);
+    opacity: 0;
+  }
 }
 
 .wk-line-meta {

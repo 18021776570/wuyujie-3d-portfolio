@@ -41,9 +41,23 @@ function Cover({
 /* ---------------- 作品清单一行 ---------------- */
 function WorkLine({ item, onOpen }: { item: WorkItem; onOpen: (item: WorkItem) => void }) {
   const hasMeta = item.meta || (item.tags && item.tags.length)
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([])
+
+  const onClick = (e: React.MouseEvent) => {
+    const el = btnRef.current
+    if (el) {
+      const r = el.getBoundingClientRect()
+      const id = Date.now()
+      setRipples((prev) => [...prev, { id, x: e.clientX - r.left, y: e.clientY - r.top }])
+      setTimeout(() => setRipples((prev) => prev.filter((p) => p.id !== id)), 700)
+    }
+    onOpen(item)
+  }
+
   return (
     <li className="wk-line">
-      <button className="wk-line-btn" onClick={() => onOpen(item)}>
+      <button className="wk-line-btn" ref={btnRef} onClick={onClick}>
         <span className="wk-line-name">{item.name}</span>
         {hasMeta && (
           <span className="wk-line-meta">
@@ -56,6 +70,14 @@ function WorkLine({ item, onOpen }: { item: WorkItem; onOpen: (item: WorkItem) =
               ))}
           </span>
         )}
+        {ripples.map((p) => (
+          <span
+            key={p.id}
+            className="wk-ripple"
+            style={{ left: p.x, top: p.y }}
+            aria-hidden="true"
+          />
+        ))}
       </button>
     </li>
   )
@@ -173,9 +195,40 @@ function WorkDetail({
   )
 }
 
+/* ---------------- 进度圆环：SVG 圆环 + 当前百分比 ---------------- */
+function RingProgress({ progress }: { progress: any }) {
+  const [pct, setPct] = useState(0)
+  useEffect(() => {
+    const unsub = progress.on('change', (v: number) => {
+      setPct(Math.round(v * 100))
+    })
+    return unsub
+  }, [progress])
+
+  const R = 26
+  const C = 2 * Math.PI * R
+  const dashOffset = C - (pct / 100) * C
+
+  return (
+    <div className="wk-ring" aria-hidden="true">
+      <svg viewBox="0 0 64 64" className="wk-ring-svg">
+        <circle className="wk-ring-track" cx="32" cy="32" r={R} />
+        <circle
+          className="wk-ring-fill"
+          cx="32"
+          cy="32"
+          r={R}
+          strokeDasharray={C}
+          strokeDashoffset={dashOffset}
+        />
+      </svg>
+      <span className="wk-ring-pct">{pct}%</span>
+    </div>
+  )
+}
+
 /* ---------------- 作品区：竖滚 pin → 横移画廊 ---------------- */
-export default function Works({ innerRef }: { innerRef: Ref<HTMLElement> }) {
-  const [active, setActive] = useState<WorkItem | null>(null)
+export default function Works({ innerRef }: { innerRef: Ref<HTMLElement> }) {  const [active, setActive] = useState<WorkItem | null>(null)
 
   const galleryRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
@@ -231,9 +284,8 @@ export default function Works({ innerRef }: { innerRef: Ref<HTMLElement> }) {
             ))}
           </motion.div>
 
-          <div className="wk-progress" aria-hidden="true">
-            <motion.div className="wk-progress-fill" style={{ scaleX: scrollYProgress }} />
-          </div>
+          {/* 进度圆环 + 百分比 */}
+          <RingProgress progress={scrollYProgress} />
           <motion.span className="wk-hint" style={{ opacity: hintOpacity }} aria-hidden="true">
             继续下滑
           </motion.span>
