@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, type ReactNode } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { SCENE } from '../config/profile'
@@ -206,8 +206,10 @@ export default function Scene() {
       />
       <directionalLight position={[-5, 4, -4]} intensity={1.8} color="#ffdcab" />
 
-      {/* 模型：有 glb 用自定义模型，否则占位小人 */}
-      {SCENE.glb ? <CustomModel /> : <PlaceholderFigure />}
+      {/* 模型：从 0 放大到当前大小，同时旋转入场（约 2 秒） */}
+      <ModelEntrance>
+        {SCENE.glb ? <CustomModel /> : <PlaceholderFigure />}
+      </ModelEntrance>
 
       {/* 地面阴影接收面 */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.15, 0]} receiveShadow>
@@ -216,6 +218,28 @@ export default function Scene() {
       </mesh>
     </>
   )
+}
+
+/** 模型入场：从 0 缩放并带一圈暖色旋转，约 2 秒完成 */
+function ModelEntrance({ children }: { children: ReactNode }) {
+  const group = useRef<THREE.Group>(null)
+  const start = useRef<number | null>(null)
+  const duration = 2.05
+
+  useFrame((state) => {
+    if (!group.current) return
+    if (start.current === null) start.current = state.clock.elapsedTime
+    const elapsed = state.clock.elapsedTime - start.current
+    const raw = THREE.MathUtils.clamp(elapsed / duration, 0, 1)
+    // easeOutBack：放大到终点时带很轻的回弹，更像“旋转出场”
+    const eased = 1 - Math.pow(1 - raw, 3)
+    const overshoot = raw < 1 ? Math.sin(raw * Math.PI) * 0.035 : 0
+    group.current.scale.setScalar(Math.max(0.001, eased + overshoot))
+    group.current.rotation.y = (1 - eased) * Math.PI * 1.35
+    group.current.rotation.z = (1 - eased) * -0.045
+  })
+
+  return <group ref={group}>{children}</group>
 }
 
 /** 上下渐变背景球（包裹相机），营造电影感天空 */

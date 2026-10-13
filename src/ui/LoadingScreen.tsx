@@ -8,7 +8,8 @@ import { motion } from 'framer-motion'
 export default function LoadingScreen() {
   const [done, setDone] = useState(false)
   useEffect(() => {
-    const t = setTimeout(() => setDone(true), 900)
+    // 只保护首帧，不能遮住模型约 2 秒的入场动画
+    const t = setTimeout(() => setDone(true), 260)
     return () => clearTimeout(t)
   }, [])
   return (
