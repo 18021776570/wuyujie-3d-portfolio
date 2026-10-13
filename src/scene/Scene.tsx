@@ -235,7 +235,7 @@ function ModelEntrance({ children }: { children: ReactNode }) {
     const eased = 1 - Math.pow(1 - raw, 3)
     const overshoot = raw < 1 ? Math.sin(raw * Math.PI) * 0.035 : 0
     group.current.scale.setScalar(Math.max(0.001, eased + overshoot))
-    group.current.rotation.y = (1 - eased) * Math.PI * 1.35
+    group.current.rotation.y = (1 - eased) * Math.PI * 3.5
     group.current.rotation.z = (1 - eased) * -0.045
   })
 
