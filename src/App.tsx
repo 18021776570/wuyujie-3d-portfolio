@@ -14,6 +14,7 @@ import { PROFILE, RESUME } from './config/profile'
 export default function App() {
   const { scrollY } = useScroll()
   const worksRef = useRef<HTMLElement>(null)
+  const [worksProgress, setWorksProgress] = useState(0)
 
   // 当前激活的履历条目（用于「滚动切换身份形象图」）
   const activePersona = useActivePersona()
@@ -21,22 +22,15 @@ export default function App() {
   // 首屏 / 「联系我」(无图) → 保留真实 3D 模型。
   const show3D = !(activePersona !== null && !!RESUME[activePersona]?.image)
 
-  // 作品区蒙层：作品区进入视口后压暗 3D 背景，保证画廊文字可读
-  const { scrollYProgress: worksProgress } = useScroll({
-    target: worksRef,
-    offset: ['start end', 'start center'],
-  })
-  const fogBg = useTransform(
-    worksProgress,
-    [0, 1],
-    ['rgba(244, 234, 214, 0)', 'rgba(244, 234, 214, 0.5)']
-  )
   // 离开首屏后压暗 3D 场景，保证履历文字可读
   const scrimOpacity = useTransform(scrollY, [0, 520], [0, 0.4])
   // 首屏滚动提示淡出
   const cueOpacity = useTransform(scrollY, [0, 160], [1, 0])
   // 首屏装饰淡出
   const heroChromeOpacity = useTransform(scrollY, [0, 280], [1, 0])
+  // 作品区蒙层：仅当横向视频作品基本铺满视口后才出现
+  const fogOpacity = Math.max(0, Math.min(0.5, ((worksProgress - 0.28) / 0.38) * 0.5))
+
 
   return (
     <>
@@ -81,7 +75,10 @@ export default function App() {
       {/* 作品区固定蒙层 */}
       <motion.div
         className="stage-fog"
-        style={{ background: fogBg }}
+        style={{
+          opacity: fogOpacity,
+          background: 'rgba(244, 234, 214, 0.92)',
+        }}
         aria-hidden="true"
       />
 
@@ -114,7 +111,7 @@ export default function App() {
       <main className="content">
         <Hero cueOpacity={cueOpacity} />
         <Resume />
-        <Works innerRef={worksRef} />
+        <Works innerRef={worksRef} onProgressChange={setWorksProgress} />
       </main>
     </>
   )

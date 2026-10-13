@@ -228,7 +228,14 @@ function RingProgress({ progress }: { progress: any }) {
 }
 
 /* ---------------- 作品区：竖滚 pin → 横移画廊 ---------------- */
-export default function Works({ innerRef }: { innerRef: Ref<HTMLElement> }) {  const [active, setActive] = useState<WorkItem | null>(null)
+export default function Works({
+  innerRef,
+  onProgressChange,
+}: {
+  innerRef: Ref<HTMLElement>
+  onProgressChange?: (value: number) => void
+}) {
+  const [active, setActive] = useState<WorkItem | null>(null)
 
   const galleryRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
@@ -254,6 +261,13 @@ export default function Works({ innerRef }: { innerRef: Ref<HTMLElement> }) {  c
 
   const x = useTransform(scrollYProgress, [0, 1], [0, -scrollRange])
   const hintOpacity = useTransform(scrollYProgress, [0.85, 1], [1, 0])
+
+  // 把横向画廊真实进度回传给 App，蒙层只跟随作品卡片覆盖进度
+  useEffect(() => {
+    if (!onProgressChange) return
+    const unsubscribe = scrollYProgress.on('change', onProgressChange)
+    return unsubscribe
+  }, [onProgressChange, scrollYProgress])
 
   // 详情打开时锁滚动 + ESC 关闭
   useEffect(() => {
