@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, type Ref } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { WORKS, type WorkItem, type WorkSection } from '../config/profile'
 
 const EASE = [0.22, 1, 0.36, 1]
+/** 触发翻页的拖动距离阈值：卡片宽度的 12%（不够就回弹） */
+const swipeThreshold = (w: number) => Math.max(56, w * 0.12)
 
 /* ---------------- 封面（支持图片 / 视频 / 渐变占位） ---------------- */
 function Cover({
@@ -93,13 +95,15 @@ function SectionCard({
 }) {
   return (
     <div className="wk-card">
-      <div className="wk-card-head">
-        <span className="wk-card-no">{section.no}</span>
-        <h3 className="wk-card-title">{section.title}</h3>
-        <span className="wk-card-tagline">{section.tagline}</span>
-      </div>
-      <div className="wk-card-cover">
-        <Cover cover={section.cover} alt={section.title} no={section.no} />
+      <div className="wk-card-top">
+        <div className="wk-card-head">
+          <span className="wk-card-no">{section.no}</span>
+          <h3 className="wk-card-title">{section.title}</h3>
+          <span className="wk-card-tagline">{section.tagline}</span>
+        </div>
+        <div className="wk-card-cover">
+          <Cover cover={section.cover} alt={section.title} no={section.no} />
+        </div>
       </div>
       <div className="wk-card-body">
         <ul className="wk-list">
@@ -195,79 +199,106 @@ function WorkDetail({
   )
 }
 
-/* ---------------- 进度圆环：SVG 圆环 + 当前百分比 ---------------- */
-function RingProgress({ progress }: { progress: any }) {
-  const [pct, setPct] = useState(0)
-  useEffect(() => {
-    const unsub = progress.on('change', (v: number) => {
-      setPct(Math.round(v * 100))
-    })
-    return unsub
-  }, [progress])
-
-  const R = 26
-  const C = 2 * Math.PI * R
-  const dashOffset = C - (pct / 100) * C
-
-  return (
-    <div className="wk-ring" aria-hidden="true">
-      <svg viewBox="0 0 64 64" className="wk-ring-svg">
-        <circle className="wk-ring-track" cx="32" cy="32" r={R} />
-        <circle
-          className="wk-ring-fill"
-          cx="32"
-          cy="32"
-          r={R}
-          strokeDasharray={C}
-          strokeDashoffset={dashOffset}
-        />
-      </svg>
-      <span className="wk-ring-pct">{pct}%</span>
-    </div>
-  )
-}
-
-/* ---------------- 作品区：竖滚 pin → 横移画廊 ---------------- */
-export default function Works({
-  innerRef,
-  onProgressChange,
-}: {
-  innerRef: Ref<HTMLElement>
-  onProgressChange?: (value: number) => void
-}) {
+/* ---------------- 卡片式画廊：拖动 / 滑动切换 ---------------- */
+export default function Works({ innerRef }: { innerRef?: Ref<HTMLElement> }) {
+  const n = WORKS.length
+  const [index, setIndex] = useState(0)
+  const [drag, setDrag] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const [touched, setTouched] = useState(false)
   const [active, setActive] = useState<WorkItem | null>(null)
 
-  const galleryRef = useRef<HTMLDivElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: galleryRef,
-    offset: ['start start', 'end end'],
-  })
+  const stageRef = useRef<HTMLDivElement>(null)
+  const cleanupRef = useRef<null | (() => void)>(null)
+  const movedRef = useRef(false)
 
-  const [scrollRange, setScrollRange] = useState(0)
-  useEffect(() => {
-    const el = trackRef.current
-    if (!el) return
-    const measure = () => setScrollRange(Math.max(0, el.scrollWidth - window.innerWidth))
-    measure()
-    const ro = new ResizeObserver(measure)
-    ro.observe(el)
-    window.addEventListener('resize', measure)
-    return () => {
-      ro.disconnect()
-      window.removeEventListener('resize', measure)
+  const go = (i: number) => {
+    setTouched(true)
+    setIndex(Math.max(0, Math.min(n - 1, i)))
+  }
+
+  /* ---- 指针拖动：鼠标拖拽 + 触屏左右滑都走这一套 ----
+   * 不用 setPointerCapture：否则 click 会被舞台吞掉，卡内作品清单点不开。
+   * 按下时立刻在 window 上挂 move / up（挂在 effect 里会晚一帧，丢掉手势起始）。 */
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    const sx = e.clientX
+    const sy = e.clientY
+    const pid = e.pointerId
+    let axis: '' | 'x' | 'y' = ''
+    movedRef.current = false
+
+    const onMove = (ev: PointerEvent) => {
+      if (ev.pointerId !== pid) return
+      const dx = ev.clientX - sx
+      const dy = ev.clientY - sy
+      // 先判定手势方向：横向 → 交给我们翻页；纵向 → 交还页面滚动
+      if (!axis) {
+        if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return
+        axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
+      }
+      if (axis !== 'x') return
+      movedRef.current = true
+      setDragging(true)
+      // 首尾越界时加阻尼，手感上"拉不动"
+      const atEdge = (index === 0 && dx > 0) || (index === n - 1 && dx < 0)
+      setDrag(atEdge ? dx * 0.32 : dx)
     }
-  }, [WORKS.length])
 
-  const x = useTransform(scrollYProgress, [0, 1], [0, -scrollRange])
-  const hintOpacity = useTransform(scrollYProgress, [0.85, 1], [1, 0])
+    const onUp = (ev: PointerEvent) => {
+      if (ev.pointerId !== pid) return
+      const dx = ev.clientX - sx
+      if (axis === 'x') {
+        const th = swipeThreshold(stageRef.current?.clientWidth ?? 800)
+        if (dx <= -th) go(index + 1)
+        else if (dx >= th) go(index - 1)
+        else setTouched(true)
+      }
+      detach()
+      setDrag(0)
+      setDragging(false)
+    }
 
-  // 把横向画廊真实进度回传给 App，蒙层只跟随作品卡片覆盖进度
+    const detach = () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+      if (cleanupRef.current === detach) cleanupRef.current = null
+    }
+
+    cleanupRef.current?.()
+    cleanupRef.current = detach
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
+  }
+
+  // 卸载时兜底摘掉监听
+  useEffect(() => () => cleanupRef.current?.(), [])
+
+  // 拖动结束后紧跟的 click 不应打开作品详情
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (movedRef.current) {
+      e.preventDefault()
+      e.stopPropagation()
+      movedRef.current = false
+    }
+  }
+
+  // 键盘 ← → 翻页（仅在作品区进入视口时生效）
   useEffect(() => {
-    if (!onProgressChange) return
-    const unsubscribe = scrollYProgress.on('change', onProgressChange)
-    return unsubscribe
-  }, [onProgressChange, scrollYProgress])
+    const onKey = (e: KeyboardEvent) => {
+      if (active) return
+      const el = stageRef.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      if (r.bottom < 120 || r.top > window.innerHeight - 120) return
+      if (e.key === 'ArrowRight') go(index + 1)
+      else if (e.key === 'ArrowLeft') go(index - 1)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [index, active])
 
   // 详情打开时锁滚动 + ESC 关闭
   useEffect(() => {
@@ -284,26 +315,82 @@ export default function Works({
 
   return (
     <section className="works" ref={innerRef}>
+      <span className="wk-gallery-title">Works</span>
+
       <div
-        className="wk-gallery"
-        ref={galleryRef}
-        style={{ height: `calc(100vh + ${scrollRange}px)` }}
+        className={`wk-stage${dragging ? ' is-dragging' : ''}`}
+        ref={stageRef}
+        onPointerDown={onPointerDown}
+        onClickCapture={onClickCapture}
+        onDragStart={(e) => e.preventDefault()}
       >
-        <div className="wk-gallery-sticky">
-          <span className="wk-gallery-title">Works</span>
+        {WORKS.map((s, i) => {
+          const d = i - index
+          const ad = Math.abs(d)
+          if (ad > 2) return null
+          return (
+            <div
+              key={s.id}
+              className={`wk-slide${d === 0 ? ' is-active' : ''}`}
+              style={{
+                transform: `translateX(calc(${d} * (100% + var(--wk-gap)) + ${drag}px)) scale(${
+                  1 - ad * 0.07
+                })`,
+                opacity: ad === 0 ? 1 : ad === 1 ? 0.6 : 0.28,
+                zIndex: 10 - ad,
+              }}
+              onClick={() => d !== 0 && go(i)}
+              aria-hidden={d !== 0}
+            >
+              <SectionCard section={s} onOpen={setActive} />
+            </div>
+          )
+        })}
 
-          <motion.div className="wk-track" ref={trackRef} style={{ x }}>
-            {WORKS.map((s) => (
-              <SectionCard key={s.id} section={s} onOpen={setActive} />
-            ))}
-          </motion.div>
+        {/* 左右翻页按钮 */}
+        <button
+          className="wk-nav wk-nav-prev"
+          onClick={() => go(index - 1)}
+          disabled={index === 0}
+          aria-label="上一个作品"
+        >
+          ‹
+        </button>
+        <button
+          className="wk-nav wk-nav-next"
+          onClick={() => go(index + 1)}
+          disabled={index === n - 1}
+          aria-label="下一个作品"
+        >
+          ›
+        </button>
+      </div>
 
-          {/* 进度圆环 + 百分比 */}
-          <RingProgress progress={scrollYProgress} />
-          <motion.span className="wk-hint" style={{ opacity: hintOpacity }} aria-hidden="true">
-            继续下滑
-          </motion.span>
+      {/* 分页指示 + 操作提示 */}
+      <div className="wk-bar">
+        <div className="wk-dots" role="tablist" aria-label="作品板块切换">
+          {WORKS.map((s, i) => (
+            <button
+              key={s.id}
+              className={`wk-dot${i === index ? ' is-on' : ''}`}
+              onClick={() => go(i)}
+              aria-label={s.title}
+              aria-selected={i === index}
+              role="tab"
+            >
+              <span className="wk-dot-no">{s.no}</span>
+            </button>
+          ))}
         </div>
+        <motion.span
+          className="wk-hint"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: touched ? 0 : 1 }}
+          transition={{ duration: 0.5 }}
+          aria-hidden="true"
+        >
+          {index === n - 1 ? '已经是最后一个啦 · 可向左滑回看' : '向左滑动 · 查看下一个作品'}
+        </motion.span>
       </div>
 
       <AnimatePresence>

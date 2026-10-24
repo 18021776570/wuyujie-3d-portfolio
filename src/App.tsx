@@ -18,7 +18,8 @@ export default function App() {
   const contactRef = useRef<HTMLElement>(null)
   // 进入页尾「联系我」时，收掉作品区的暖白蒙层，保证 3D 模型与卡片干净呈现
   const contactInView = useInView(contactRef, { margin: '-20% 0px -20% 0px' })
-  const [worksProgress, setWorksProgress] = useState(0)
+  // 作品区进入视口时压一层很淡的暖光，保证卡片文字清晰（页尾不加）
+  const worksInView = useInView(worksRef, { margin: '-25% 0px -25% 0px' })
   // 浏览器是否支持 WebGL：不支持时跳过 3D，直接用静态形象图兜底
   const [webglOk] = useState(() => (typeof window === 'undefined' ? true : detectWebGL()))
 
@@ -34,10 +35,7 @@ export default function App() {
   const cueOpacity = useTransform(scrollY, [0, 160], [1, 0])
   // 首屏装饰淡出
   const heroChromeOpacity = useTransform(scrollY, [0, 280], [1, 0])
-  // 作品区蒙层：仅当横向视频作品基本铺满视口后才出现；滚到页尾「联系我」时归零
-  const fogOpacity = contactInView
-    ? 0
-    : Math.max(0, Math.min(0.5, ((worksProgress - 0.28) / 0.38) * 0.5))
+  const fogOpacity = contactInView ? 0 : worksInView ? 0.3 : 0
 
 
   return (
@@ -122,7 +120,7 @@ export default function App() {
       <main className="content">
         <Hero cueOpacity={cueOpacity} />
         <Resume />
-        <Works innerRef={worksRef} onProgressChange={setWorksProgress} />
+        <Works innerRef={worksRef} />
         {/* 页尾：看完作品再留联系方式 */}
         <Contact innerRef={contactRef} />
       </main>

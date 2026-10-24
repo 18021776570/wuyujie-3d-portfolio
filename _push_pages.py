@@ -67,7 +67,7 @@ def delete(rel: str, message: str):
     print("deleted", rel)
 
 
-MSG = "联系我移至页尾（作品集之后）"
+MSG = "作品集改为卡片式画廊：左右滑动切换"
 html = os.path.join(DIST, "index.html")
 put("index.html", html, MSG)
 new_assets = set(os.listdir(os.path.join(DIST, "assets")))
