@@ -225,9 +225,20 @@ function ModelEntrance({ children }: { children: ReactNode }) {
   const group = useRef<THREE.Group>(null)
   const start = useRef<number | null>(null)
   const duration = 2.05
+  // 系统开启「减弱动态效果」时跳过入场动画，直接呈现最终姿态
+  const reduced = useRef(false)
+  useEffect(() => {
+    reduced.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  }, [])
 
   useFrame((state) => {
     if (!group.current) return
+    if (reduced.current) {
+      group.current.scale.setScalar(1)
+      group.current.rotation.y = 0
+      group.current.rotation.z = 0
+      return
+    }
     if (start.current === null) start.current = state.clock.elapsedTime
     const elapsed = state.clock.elapsedTime - start.current
     const raw = THREE.MathUtils.clamp(elapsed / duration, 0, 1)

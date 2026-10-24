@@ -9,12 +9,15 @@ import Works from './ui/Works'
 import LoadingScreen from './ui/LoadingScreen'
 import NoiseOverlay from './ui/NoiseOverlay'
 import PetalField from './ui/PetalField'
+import { SceneErrorBoundary, SceneFallback, detectWebGL } from './ui/SceneFallback'
 import { PROFILE, RESUME } from './config/profile'
 
 export default function App() {
   const { scrollY } = useScroll()
   const worksRef = useRef<HTMLElement>(null)
   const [worksProgress, setWorksProgress] = useState(0)
+  // 浏览器是否支持 WebGL：不支持时跳过 3D，直接用静态形象图兜底
+  const [webglOk] = useState(() => (typeof window === 'undefined' ? true : detectWebGL()))
 
   // 当前激活的履历条目（用于「滚动切换身份形象图」）
   const activePersona = useActivePersona()
@@ -38,17 +41,23 @@ export default function App() {
 
       {/* 固定 3D 背景（命中身份形象图时淡出） */}
       <div className="scene-bg" style={{ opacity: show3D ? 1 : 0 }}>
-        <Canvas
-          shadows={{ type: THREE.PCFShadowMap }}
-          dpr={[1, 1.5]}
-          camera={{ position: [0, 1.8, 9.5], fov: 42, near: 0.1, far: 500 }}
-          gl={{ antialias: true, stencil: false, depth: true, toneMapping: THREE.ACESFilmicToneMapping }}
-        >
-          <color attach="background" args={['#f4e7cd']} />
-          <Suspense fallback={null}>
-            <Scene />
-          </Suspense>
-        </Canvas>
+        {webglOk ? (
+          <SceneErrorBoundary fallback={<SceneFallback />}>
+            <Canvas
+              shadows={{ type: THREE.PCFShadowMap }}
+              dpr={[1, 1.5]}
+              camera={{ position: [0, 1.8, 9.5], fov: 42, near: 0.1, far: 500 }}
+              gl={{ antialias: true, stencil: false, depth: true, toneMapping: THREE.ACESFilmicToneMapping }}
+            >
+              <color attach="background" args={['#f4e7cd']} />
+              <Suspense fallback={null}>
+                <Scene />
+              </Suspense>
+            </Canvas>
+          </SceneErrorBoundary>
+        ) : (
+          <SceneFallback />
+        )}
       </div>
 
       {/* 身份形象图层：滚动到对应履历段时整屏淡入（3D 同步淡出）。

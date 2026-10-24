@@ -87,6 +87,26 @@ canvas {
   height: 100% !important;
 }
 
+/* WebGL 不可用 / 3D 崩溃时的静态形象图兜底：构图对齐 3D 模型（居中贴底） */
+.scene-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.scene-fallback img {
+  height: 78vh;
+  width: auto;
+  max-width: 92vw;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 18px 30px rgba(122, 88, 48, 0.22));
+  user-select: none;
+}
+
 /* 滚动渐暗：仅右侧（时间轴所在）柔化，向左平滑渐隐 —— 改为暖奶油渐亮，让右侧文字更清爽 */
 .scrim {
   position: fixed;
