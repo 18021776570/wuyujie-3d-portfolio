@@ -91,19 +91,23 @@ export default function Scene() {
     }
     // 作品区：镜头拉远并抬高，回到完整人物/背面展示
     cams.push({ pos: new THREE.Vector3(-0.8, 2.8 + oy, 10.8), look: new THREE.Vector3(0, 1.05 + oy, 0), modelTurnDeg: 0 })
+    // 页尾「联系我」：回到正面中景，完整人物收尾（与首屏同构图，稍近一点）
+    cams.push({ pos: new THREE.Vector3(0, 1.8 + oy, 8.6), look: new THREE.Vector3(0, 1.42 + oy, 0), modelTurnDeg: 0 })
     return cams
   }
 
   // 镜头锚点 DOM 位置（首屏 + 每条履历 + 作品区）——首次 useFrame 时惰性查询
   const anchors = useMemo(() => {
     const els: HTMLElement[] = []
-    const hero = document.querySelector('.hero') as HTMLElement | null
-    if (hero) els.push(hero)
-    document.querySelectorAll<HTMLElement>('.tl-entry').forEach((el) => els.push(el))
-    const works = document.querySelector('.works') as HTMLElement | null
-    if (works) els.push(works)
-    return els
-  }, [])
+      const hero = document.querySelector('.hero') as HTMLElement | null
+      if (hero) els.push(hero)
+      document.querySelectorAll<HTMLElement>('.tl-entry').forEach((el) => els.push(el))
+      const works = document.querySelector('.works') as HTMLElement | null
+      if (works) els.push(works)
+      const contact = document.querySelector('.contact') as HTMLElement | null
+      if (contact) els.push(contact)
+      return els
+    }, [])
 
   const posA = useRef(new THREE.Vector3())
   const posB = useRef(new THREE.Vector3())
@@ -125,6 +129,8 @@ export default function Scene() {
       document.querySelectorAll<HTMLElement>('.tl-entry').forEach((el) => els.push(el))
       const works = document.querySelector('.works') as HTMLElement | null
       if (works) els.push(works)
+      const contact = document.querySelector('.contact') as HTMLElement | null
+      if (contact) els.push(contact)
       anchorCache.current = els
     }
     if (!shotsRef.current) {

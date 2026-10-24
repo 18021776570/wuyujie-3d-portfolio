@@ -1333,6 +1333,93 @@ canvas {
 }
 
 /* ============================================================================
+ * 页尾「联系我」：整站最后一屏（左侧 3D 模型，右侧奶油卡）
+ * ========================================================================== */
+.contact {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 12vh 10vw 8vh 0;
+}
+
+.contact-card {
+  width: min(480px, 88vw);
+  background: rgba(255, 250, 240, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 30px 32px 26px;
+  box-shadow: 0 18px 52px rgba(120, 88, 46, 0.16);
+}
+
+.contact-kicker {
+  display: inline-block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.contact-title {
+  margin-top: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(32px, 4.6vw, 54px);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.contact-role {
+  margin-top: 6px;
+  font-size: clamp(15px, 1.6vw, 19px);
+  color: var(--ink-soft);
+}
+
+.contact-lines {
+  margin-top: 18px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-lines li {
+  font-size: clamp(16px, 1.7vw, 20px);
+  color: rgba(60, 44, 28, 0.92);
+}
+
+.contact-tags {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.contact-note {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(122, 96, 60, 0.16);
+  font-size: clamp(13.5px, 1.4vw, 16px);
+  color: var(--muted);
+}
+
+.contact-foot {
+  margin-top: 34px;
+  margin-right: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: rgba(74, 56, 38, 0.45);
+}
+
+/* ============================================================================
  * 移动端适配（≤640px）
  * ========================================================================== */
 @media (max-width: 640px) {
@@ -1363,6 +1450,20 @@ canvas {
   /* 移动端隐藏磨砂右轨（会糊掉半屏背景） */
   .glass-rail {
     display: none;
+  }
+
+  /* 页尾「联系我」：窄屏改为居中通栏 */
+  .contact {
+    align-items: center;
+    padding: 10vh 6vw 6vh;
+  }
+  .contact-card {
+    width: 100%;
+    padding: 24px 22px 22px;
+  }
+  .contact-foot {
+    margin-right: 0;
+    text-align: center;
   }
 
   /* 作品集：由「竖滚 pin + 横移」改为上下堆叠的普通滚动 */
