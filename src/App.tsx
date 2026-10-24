@@ -8,7 +8,6 @@ import Resume from './ui/Resume'
 import Works from './ui/Works'
 import LoadingScreen from './ui/LoadingScreen'
 import NoiseOverlay from './ui/NoiseOverlay'
-import PetalField from './ui/PetalField'
 import { SceneErrorBoundary, SceneFallback, detectWebGL } from './ui/SceneFallback'
 import { PROFILE, RESUME } from './config/profile'
 
@@ -112,9 +111,6 @@ export default function App() {
 
       {/* 全屏胶片噪点 */}
       <NoiseOverlay />
-
-      {/* 秋日花瓣 / 光尘粒子层（暖色田园氛围 + 鼠标视差） */}
-      <PetalField />
 
       {/* 可滚动内容 */}
       <main className="content">

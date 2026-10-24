@@ -134,14 +134,6 @@ canvas {
   );
 }
 
-/* 秋日花瓣 / 光尘粒子层：暖色点缀 + 鼠标视差，置于 3D 场景之上、内容之下 */
-.petal-field {
-  position: fixed;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-}
-
 /* 作品区固定蒙层：进入作品区时柔和压一层暖光，保证画廊文字清晰 */
 .stage-fog {
   position: fixed;
