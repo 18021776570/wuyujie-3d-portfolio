@@ -26,20 +26,6 @@ export default function Hero({ cueOpacity }: { cueOpacity: any }) {
             {PROFILE.heroTitle}
           </motion.h1>
           <Typewriter lines={PROFILE.about} bodyY={bodyY} />
-          <motion.nav
-            className="hero-actions"
-            aria-label="页面快捷入口"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 2.2 }}
-          >
-            <a className="hero-action hero-action-primary" href="#works">
-              查看作品 <span aria-hidden="true">↗</span>
-            </a>
-            <a className="hero-action" href="#contact">
-              联系我
-            </a>
-          </motion.nav>
         </div>
       </motion.div>
       <motion.div className="scroll-cue" style={{ opacity: cueOpacity }} aria-hidden="true">
