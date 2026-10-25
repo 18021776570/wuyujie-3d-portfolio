@@ -311,6 +311,44 @@ canvas {
   color: var(--muted);
 }
 
+/* 首屏快捷入口：让访客不用猜下一步该做什么 */
+.hero-actions {
+  pointer-events: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(22px, 3.5vh, 34px);
+}
+
+.hero-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 18px;
+  border: 1px solid rgba(122, 96, 60, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.56);
+  color: var(--ink-soft);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgba(120, 88, 46, 0.08);
+  transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+.hero-action:hover,
+.hero-action:focus-visible {
+  transform: translateY(-3px);
+  background: rgba(255, 252, 246, 0.9);
+  color: var(--ink);
+}
+.hero-action-primary {
+  border-color: rgba(195, 137, 47, 0.42);
+  background: rgba(255, 247, 226, 0.78);
+  color: #76501d;
+}
+
 /* 打字机光标：暖金色闪烁细竖条 */
 .about-caret {
   display: inline-block;
@@ -1474,6 +1512,16 @@ canvas {
  * 移动端适配（≤640px）
  * ========================================================================== */
 @media (max-width: 640px) {
+  .hero-actions {
+    gap: 8px;
+    margin-top: 20px;
+  }
+  .hero-action {
+    min-height: 38px;
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+
   /* 时间轴文案落在毛玻璃色块卡片上，与背景清晰分离 */
   .tl-body {
     background: var(--card);

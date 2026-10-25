@@ -314,7 +314,7 @@ export default function Works({ innerRef }: { innerRef?: Ref<HTMLElement> }) {
   }, [active])
 
   return (
-    <section className="works" ref={innerRef}>
+    <section className="works" id="works" ref={innerRef}>
       <span className="wk-gallery-title">Works</span>
 
       <div

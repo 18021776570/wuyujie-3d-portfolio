@@ -14,7 +14,7 @@ export default function Contact({ innerRef }: { innerRef?: Ref<HTMLElement> }) {
   const year = new Date().getFullYear()
 
   return (
-    <section className="contact" ref={innerRef}>
+    <section className="contact" id="contact" ref={innerRef}>
       <motion.div
         className="contact-card"
         initial={{ opacity: 0, y: 30 }}
