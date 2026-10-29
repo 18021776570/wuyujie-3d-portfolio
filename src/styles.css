@@ -709,7 +709,7 @@ canvas {
   gap: clamp(24px, 4vh, 44px);
   padding: clamp(90px, 14vh, 150px) 0 clamp(40px, 8vh, 90px);
   --wk-card-w: min(760px, 76vw);
-  --wk-card-h: clamp(470px, 74vh, 640px);
+  --wk-card-h: clamp(520px, 74vh, 640px);
   --wk-gap: 40px;
 }
 
@@ -1520,7 +1520,7 @@ canvas {
   /* 作品集：卡片画廊在窄屏收窄留白、缩小左右翻页按钮 */
   .works {
     --wk-card-w: min(520px, 86vw);
-    --wk-card-h: clamp(480px, 76vh, 640px);
+    --wk-card-h: clamp(520px, 76vh, 640px);
     --wk-gap: 26px;
     padding-top: clamp(64px, 12vh, 110px);
   }
